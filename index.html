@@ -103,7 +103,7 @@
             });
         }
 
-        fetch('https://storage.googleapis.com/sames-map-data/texas_agencies_with_final_managers.json')
+        fetch('texas_agencies_with_final_managers.json')
             .then(response => response.json())
             .then(data => {
                 data.forEach(agency => {
