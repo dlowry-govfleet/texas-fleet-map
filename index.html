@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Texas Territory Map – With Logo, Filters & Legend</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    />
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ccc;
+        }
+        #header img {
+            height: 60px;
+            margin-right: 20px;
+        }
+        #header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        #controls {
+            padding: 10px;
+            text-align: center;
+        }
+        #map {
+            height: 85vh;
+            width: 100%;
+        }
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background: white;
+            padding: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <img src="https://storage.googleapis.com/sames-map-data/Sames-Government_Fleet_Sales_Logo.png" alt="Sames Logo">
+        <h2>Texas Agency Territory Map (Interactive)</h2>
+    </div>
+    <div id="controls">
+        <label><input type="checkbox" class="filter" value="Trevor Collins" checked> Trevor Collins</label>
+        <label><input type="checkbox" class="filter" value="Jorge Fuentes" checked> Jorge Fuentes</label>
+        <label><input type="checkbox" class="filter" value="Future Manager" checked> Future Manager</label>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+        <div><span class="legend-color" style="background: blue;"></span> Trevor Collins</div>
+        <div><span class="legend-color" style="background: green;"></span> Jorge Fuentes</div>
+        <div><span class="legend-color" style="background: orange;"></span> Future Manager</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([31.0, -99.0], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        const colorMap = {
+            "Trevor Collins": "blue",
+            "Jorge Fuentes": "green",
+            "Future Manager": "orange"
+        };
+
+        const layersByManager = {
+            "Trevor Collins": [],
+            "Jorge Fuentes": [],
+            "Future Manager": []
+        };
+
+        function createColoredMarker(lat, lng, color) {
+            return L.circleMarker([lat, lng], {
+                radius: 8,
+                fillColor: color,
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            });
+        }
+
+        fetch('https://storage.googleapis.com/sames-map-data/texas_agencies_with_final_managers.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(agency => {
+                    const color = colorMap[agency.manager] || "gray";
+                    const marker = createColoredMarker(agency.lat, agency.lng, color);
+                    const popupContent = `
+                        <b>${agency.agency}</b><br/>
+                        ${agency.address ? agency.address + ', ' : ''}${agency.city}, TX ${agency.zip}<br/>
+                        <b>Contact:</b> ${agency.contact}<br/>
+                        <b>Phone:</b> ${agency.phone}<br/>
+                        <b>Email:</b> ${agency.email}<br/>
+                        <b>Manager:</b> ${agency.manager}
+                    `;
+                    marker.bindPopup(popupContent).addTo(map);
+                    layersByManager[agency.manager].push(marker);
+                });
+            });
+
+        document.querySelectorAll(".filter").forEach(cb => {
+            cb.addEventListener("change", () => {
+                const checkedManagers = Array.from(document.querySelectorAll(".filter:checked")).map(cb => cb.value);
+                Object.entries(layersByManager).forEach(([manager, markers]) => {
+                    markers.forEach(marker => {
+                        if (checkedManagers.includes(manager)) {
+                            marker.addTo(map);
+                        } else {
+                            marker.remove();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
