@@ -64,13 +64,13 @@
     <div id="controls">
         <label><input type="checkbox" class="filter" value="Trevor Collins" checked> Trevor Collins</label>
         <label><input type="checkbox" class="filter" value="Jorge Fuentes" checked> Jorge Fuentes</label>
-        <label><input type="checkbox" class="filter" value="Future Manager" checked> Future Manager</label>
+        <label><input type="checkbox" class="filter" value="Ethan Dean" checked> Future Manager</label>
     </div>
     <div id="map"></div>
     <div class="legend">
         <div><span class="legend-color" style="background: blue;"></span> Trevor Collins</div>
         <div><span class="legend-color" style="background: green;"></span> Jorge Fuentes</div>
-        <div><span class="legend-color" style="background: orange;"></span> Future Manager</div>
+        <div><span class="legend-color" style="background: orange;"></span> Ethan Dean</div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
@@ -83,13 +83,13 @@
         const colorMap = {
             "Trevor Collins": "blue",
             "Jorge Fuentes": "green",
-            "Future Manager": "orange"
+            "Ethan Dean": "orange"
         };
 
         const layersByManager = {
             "Trevor Collins": [],
             "Jorge Fuentes": [],
-            "Future Manager": []
+            "Ethan Dean": []
         };
 
         function createColoredMarker(lat, lng, color) {
